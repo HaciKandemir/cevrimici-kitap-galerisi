@@ -122,15 +122,11 @@ def profile():
 def favourite(url):
     full_url = 'https://itbook.store/books/'+url
     user = db.find_one("user", query={'email':session['email']})
-    if user['favs']:
-        for i in user['favs']:
-            if i == full_url:
-                break
-            else:
-                books = user['favs']
-                books['favs'].append(full_url)
-                db.find_and_modify('user',
-                        query={'email':session['email']}, favs=books)
+    if user['favs'] and not full_url in [favs_book_url for favs_book_url in user['favs']['favs']]:
+        books = user['favs']
+        books['favs'].append(full_url)
+        db.find_and_modify('user',
+                query={'email':session['email']}, favs=books)
     else:
         books = {
             'favs': [full_url]
